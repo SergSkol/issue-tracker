@@ -48,7 +48,7 @@ module.exports = function (app) {
             if (err) {
               console.error('POST error', err);
             } else {
-              res.json({issue})
+              res.json(doc)
             }
         })
       })
@@ -70,7 +70,7 @@ module.exports = function (app) {
       const _id = new mongo.ObjectId(req.body._id);
 
       for(let item in issue) {
-        if (issue[item] === '') {
+        if (!issue[item] && item !== 'open') {
           delete issue[item];
         }
       }
@@ -81,6 +81,7 @@ module.exports = function (app) {
         db.collection(project).findOneAndUpdate({_id}, {$set: issue}, {new: true}, function(err, doc) {
             if (err) {
               console.error('PUT error', err);
+              res.send('Nothing has been updated.')
             } else {
               res.send('Successfully updated!')
             }
@@ -99,6 +100,7 @@ module.exports = function (app) {
         db.collection(project).deleteOne({_id}, function(err, doc) {
             if (err) {
               console.error('DELETE error', err);
+              res.send('Nothing has been deleted.')
             } else {
               res.send('Successfully deleted!')
             }
